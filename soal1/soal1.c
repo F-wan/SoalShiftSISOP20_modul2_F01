@@ -124,6 +124,13 @@ int main(int argc, char const *argv[])
   int i = 0, sec, min, hour, sleepTime, inputSec, inputMin, inputHour;
 
   /***************  cek parameter   ***********************/
+
+  if(argc != 5)
+  {
+    puts("argumen tidak 4");
+    exit(EXIT_FAILURE);
+  }
+
   if(!strcmp(argv[1], "*")) //kalo sama dg "*"
   {
     inputSec = 999;
