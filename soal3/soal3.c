@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <wait.h>
 #include <dirent.h>
+#include <string.h>
 
 int is_regular_file(const char *path)
 {
@@ -134,62 +135,51 @@ int main()
           {
             //parent
             while ((wait(&status_unzip)) > 0);
-
-            pid_t child_c_id;
-            int status_c;
-            child_c_id = fork();
-
             DIR *d;
             struct dirent *dir;
             d = opendir("/home/kaori02/modul2/jpg");
 
-            if (child_c_id < 0)
+            if((chdir("jpg/")) < 0)
             {
-              puts("fail to create child_c_id");
+              puts("fail to chdir jpg/");
               exit(EXIT_FAILURE);
             }
 
-            if (child_c_id == 0)
+            while((dir = readdir(d)) != NULL) //smpe gada file lagi di dir
             {
-              if((chdir("jpg/")) < 0)
+              if(strcmp(dir->d_name,".") == 0 || strcmp(dir->d_name, "..") == 0) continue;
+              pid_t child_c_id;
+              int status_c;
+              child_c_id = fork();
+
+              if (child_c_id < 0)
               {
-                puts("fail to chdir jpg/");
+                puts("fail to create child_c_id");
                 exit(EXIT_FAILURE);
               }
 
-              while((dir = readdir(d)) != NULL) //smpe gada file lagi di dir
+              if (child_c_id == 0)
               {
-                pid_t child_c1_id;
-                int status_c1;
-                child_c1_id = fork();
-
-                if (child_c1_id < 0)
+                if(is_regular_file(dir->d_name))
                 {
-                  puts("fail to create child_c1_id");
-                  exit(EXIT_FAILURE);
+                  printf("file %s to sedap\n", dir->d_name);
+                  char* sedap[] = {"mv", dir->d_name, "/home/kaori02/modul2/sedaap", NULL};
+                  execv("/bin/mv", sedap);
                 }
-
-                if (child_c1_id == 0)
+                else
                 {
-                  if(is_regular_file(dir->d_name))
-                  {
-                    printf("file %s to sedap\n", dir->d_name);
-                    char* sedap[] = {"mv", dir->d_name, "/home/kaori02/modul2/sedaap", NULL};
-                    execv("/bin/mv", sedap);
-                  }
-                  else
-                  {
-                    printf("dir %s to indomie\n", dir->d_name);
-                    char* indomie[] = {"mv", dir->d_name, "/home/kaori02/modul2/indomie", NULL};
-                    execv("/bin/mv", indomie);
-                  }
+                  printf("dir %s to indomie\n", dir->d_name);
+                  char* indomie[] = {"mv", dir->d_name, "/home/kaori02/modul2/indomie", NULL};
+                  execv("/bin/mv", indomie);
                 }
               }
-              closedir(d);
             }
-            else
+            closedir(d);
+
+            if((chdir("/home/kaori02/modul2/")) < 0)
             {
-              //parent
+              puts("fail to back to modul2");
+              exit(EXIT_FAILURE);
             }
             
           }
