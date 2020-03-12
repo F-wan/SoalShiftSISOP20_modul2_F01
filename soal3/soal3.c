@@ -70,6 +70,7 @@ int main()
     {
       //parent
       while ((wait(&status_a1)) > 0);
+      puts("wait for 5 sec");
       sleep(5);
 
       pid_t child_a2_id;
@@ -149,7 +150,6 @@ int main()
             {
               if(strcmp(dir->d_name,".") == 0 || strcmp(dir->d_name, "..") == 0) continue;
               pid_t child_c_id;
-              int status_c;
               child_c_id = fork();
 
               if (child_c_id < 0)
@@ -176,12 +176,78 @@ int main()
             }
             closedir(d);
 
-            if((chdir("/home/kaori02/modul2/")) < 0)
+            // lanjut parent soal d
+            while ((wait(&status_unzip)) > 0);
+            DIR *d_indomie;
+            struct dirent *dir_indomie;
+            d_indomie = opendir("/home/kaori02/modul2/indomie");
+
+            while((dir_indomie = readdir(d_indomie)) != NULL) //smpe gada file lagi di dir_indomie
             {
-              puts("fail to back to modul2");
-              exit(EXIT_FAILURE);
+              if(strcmp(dir_indomie->d_name,".") == 0 || strcmp(dir_indomie->d_name, "..") == 0) continue;
+              
+              if((chdir("/home/kaori02/modul2/indomie")) < 0)
+              {
+                puts("fail to chdir modul2/indomie");
+                exit(EXIT_FAILURE);
+              }
+
+              pid_t child_d_id;
+              int status_d;
+              child_d_id = fork();
+
+              if (child_d_id < 0)
+              {
+                puts("fail to create child_d_id");
+                exit(EXIT_FAILURE);
+              }
+
+              char indomie[999];
+              strcpy(indomie, "/home/kaori02/modul2/indomie/");
+              char dirname[999];
+              strcpy(dirname, dir_indomie->d_name);
+              char lokasiCoba[999];
+              strcpy(lokasiCoba, strcat(indomie, dirname));
+
+              if (child_d_id == 0)
+              {
+                // buat file coba1.txt
+                char fileCoba1[999];
+                strcpy(fileCoba1, strcat(lokasiCoba, "/coba1.txt"));
+
+                printf("coba1 =  %s\n", fileCoba1);
+                char* coba1[] = {"touch", fileCoba1, NULL};
+                execv("/usr/bin/touch", coba1);
+              }
+              else
+              {
+                // 3 detik kemudian buat coba2.txt
+                while ((wait(&status_d)) > 0);
+                puts("wait for 3 sec");
+                sleep(3);
+
+                pid_t child_d1_id;
+                int status_d1;
+                child_d1_id = fork();
+
+                if (child_d1_id < 0)
+                {
+                  puts("fail to create child_d1_id");
+                  exit(EXIT_FAILURE);
+                }
+                if(child_d1_id == 0)
+                {
+                  // puts(indomie);              
+                  char fileCoba2[999];
+                  strcpy(fileCoba2, strcat(lokasiCoba, "/coba2.txt"));
+
+                  printf("coba2 =  %s\n\n", fileCoba2);
+                  char* coba2[] = {"touch", fileCoba2, NULL};
+                  execv("/usr/bin/touch", coba2);
+                }
+              }
             }
-            
+            closedir(d_indomie);
           }
         }
       }
