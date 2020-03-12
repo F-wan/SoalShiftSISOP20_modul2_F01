@@ -61,7 +61,7 @@ int CekWaktu(int inputSec, int inputMin, int inputHour)
   }
   else if(inputHour == timeNow.tm_hour)
   {
-    hour = 24 - timeNow.tm_hour;
+    hour = 24;
     hour *= 3600;
   }
   else
@@ -83,7 +83,7 @@ int CekWaktu(int inputSec, int inputMin, int inputHour)
   }
   else if(inputMin == timeNow.tm_min)
   {
-    min = 60 - timeNow.tm_min;
+    min = 60;
     min *= 60;
   }
   else
@@ -104,14 +104,18 @@ int CekWaktu(int inputSec, int inputMin, int inputHour)
   }
   else if(inputSec == timeNow.tm_sec)
   {
-    sec = 60 - timeNow.tm_sec;
+    sec = 60;
   } 
-  else sec = inputSec - timeNow.tm_sec;
+  else
+  {
+    sec = inputSec - timeNow.tm_sec;
+  } 
   
   sleepTime = hour + min + sec;
 
   if(sleepTime < 1) sleepTime = 1;
-
+  printf("hour = %d\tminute = %d\tsecond = %d\n", hour, min, sec);
+  printf("targ = %d\ttarget = %d\ttarget = %d\n", inputHour, inputMin, inputSec);
   return sleepTime;
 }
 
@@ -160,9 +164,6 @@ int main(int argc, char const *argv[])
   strcpy(shName, argv[4]);
   /*****************  end cek parameter   ******************/
 
-  sleepTime = CekWaktu(inputSec, inputMin, inputHour);
-
-
   pid_t pid, sid;        // Variabel untuk menyimpan PID
 
   pid = fork();     // Menyimpan PID dari Child Process
@@ -198,11 +199,11 @@ int main(int argc, char const *argv[])
 
   while (1)
   {
-    if(i > 0) sleepTime = CekWaktu(inputSec, inputMin, inputHour);
+    sleepTime = CekWaktu(inputSec, inputMin, inputHour);
     sleep(sleepTime);
     time_t t = time(NULL);
     struct tm timeNow = *localtime(&t);
-    printf("%02d:%02d:%02d\n", timeNow.tm_hour, timeNow.tm_min, timeNow.tm_sec);
+    printf("\n%02d:%02d:%02d\n", timeNow.tm_hour, timeNow.tm_min, timeNow.tm_sec);
     
     if ((chdir("/home/kaori02/repository/kuliah/SMT_4/SISOP_F/Modul_2/shift")) < 0)
     {
