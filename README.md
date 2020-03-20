@@ -27,7 +27,7 @@ E. Tidak boleh menggunakan fungsi system()
 Program dengan argumen seperti contoh di atas akan menjalankan script test.sh setiap
 detik pada jam 07:34.
 
-#### [Source code :](soal1/soal1.c)
+### [Source code :](soal1/soal1.c)
 
 ```c
 #include <sys/types.h>
@@ -269,7 +269,7 @@ int main(int argc, char const *argv[])
 }
 ```
 
-#### PENJELASAN
+### PENJELASAN
 - Program menerima 4 argumen. Apabila tidak sesuai, program akan berhenti dan menampilkan pesan error ``"argumen tidak 4"``
 ```c
 if(argc != 5)
@@ -423,7 +423,7 @@ folder terisi gambar, terzip lalu di delete).
 
 Kiwa lalu terbangun dan sedih karena menyadari programnya hanya sebuah mimpi. Buatlah program dalam mimpi Kiwa jadi nyata!
 
-#### [Source code :](soal2/soal2.c)
+### [Source code :](soal2/soal2.c)
 ```c
 #include <unistd.h>
 #include <string.h>
@@ -564,7 +564,7 @@ void membuatKiller(char source[])
   fclose(tujuan);
 }
 ```
-#### PENJELASAN
+### PENJELASAN
 - 
 - 
 - 
@@ -601,7 +601,7 @@ Catatan :
 - Gunakan exec dan fork
 - Direktori “.” dan “..” tidak termasuk
 
-#### [Source code :](soal3/soal3.c)
+### [Source code :](soal3/soal3.c)
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -838,7 +838,7 @@ int main()
 }
 ```
 
-#### PENJELASAN
+### PENJELASAN
 - Pertama kita buat child process untuk membuat folder `modul2`
 ```c
 pid_t child_modul2_id;
