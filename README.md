@@ -27,7 +27,7 @@ E. Tidak boleh menggunakan fungsi system()
 Program dengan argumen seperti contoh di atas akan menjalankan script test.sh setiap
 detik pada jam 07:34.
 
-### [Source code :](soal1/soal1.c)
+#### [Source code :](soal1/soal1.c)
 
 ```c
 #include <sys/types.h>
@@ -423,125 +423,151 @@ folder terisi gambar, terzip lalu di delete).
 
 Kiwa lalu terbangun dan sedih karena menyadari programnya hanya sebuah mimpi. Buatlah program dalam mimpi Kiwa jadi nyata!
 
-### [Source code :](soal2/soal2.c)
+#### [Source code :](soal2/soal2.c)
 ```c
-//buat file c yg jalan tiap 30 detik
-// daemon
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <wait.h>
-#include <dirent.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-int main()
+void membuatKiller(char source[]);
+
+int main(int argc, char **argv)
 {
-  pid_t child_fstFolder_id;
-  int status_fstFolder;
-  child_fstFolder_id = fork();
-  
-  if(child_fstFolder_id < 0)
+  if(argc != 2)
   {
-    puts("fail to create child_fstFolder_id");
+    puts("argument tidak valid");
     exit(EXIT_FAILURE);
   }
+  
+  pid_t pid, sid;
 
-  if (child_fstFolder_id == 0)
-  {
-    puts("creating folder_khusus");
-    char *folder_khusus[] = {"mkdir", "-p", "folder_khusus", NULL};
-    execv("/bin/mkdir", folder_khusus);
-  } 
-  else
-  {
-    // parent
-    while ((wait(&status_fstFolder)) > 0);
+  pid = fork();
+  
+  if (pid < 0)
+    exit(EXIT_FAILURE);
 
-    if((chdir("folder_khusus/")) < 0)
+  if (pid > 0)
+    exit(EXIT_SUCCESS);
+
+  umask(0);
+
+  sid = setsid();
+  if (sid < 0) 
+    exit(EXIT_FAILURE);
+
+  close(STDIN_FILENO);
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
+
+  membuatKiller(argv[1]);
+
+  time_t timer;
+  struct tm* tm_info;
+
+  while (1) 
+  {
+    timer = time(NULL);
+    tm_info = localtime(&timer);
+	
+
+    pid_t child1_id;
+	  int status1;
+    
+    child1_id = fork();
+    
+    char nama_folder[100];
+    strftime(nama_folder, 100, "%Y-%m-%d_%H:%M:%S", tm_info);
+
+    if (child1_id < 0)
     {
-      puts("fail to chdir folder_khusus");
-      exit(EXIT_FAILURE);
+      puts("fail to fork");
+      exit(EXIT_FAILURE); // Jika gagal membuat proses baru, program akan berhenti
     }
 
-    pid_t createC_id;
-    int status_CreateC;
-    createC_id = fork();
-
-    if(createC_id < 0)
+    if (child1_id == 0)
     {
-      puts("fail to create createC_id");
-      exit(EXIT_FAILURE);
+      if (fork() == 0)
+      {
+        char *argv[] = {"mkdir", "-p", nama_folder, NULL};
+        execv("/bin/mkdir", argv);
+      }
+      else 
+      {
+        while ((wait(&status1)) > 0);
+        for (int i = 1; i <= 20; i++)
+        {
+          if (fork() == 0)
+          {
+            time_t timer;
+			      chdir(nama_folder);
+            struct tm* file_tm_info;
+        
+            timer = time(NULL);
+            file_tm_info = localtime(&timer);
+        
+            int p = (int)time(NULL);
+            p = (p % 1000) + 100;
+            
+            char tujuan[100];
+            char name[100];
+            
+            sprintf(tujuan, "https://picsum.photos/%d", p);
+
+            
+            strftime(name, 100, "%Y-%m-%d_%H:%M:%S", file_tm_info);
+            char *argv[] = {"wget", tujuan, "-qO", name, NULL};
+            execv("/usr/bin/wget", argv);
+          }
+          
+          sleep(5);
+        }
+        char nama_folder_zip[100];
+        sprintf(nama_folder_zip, "%s.zip", nama_folder);
+        char *argv[] = {"zip", "-qrm", nama_folder_zip, nama_folder, NULL};
+        execv("/usr/bin/zip", argv);
+      }
     }
+    else
+      sleep(30);
+  }
+}
 
-    if (createC_id == 0)
+void membuatKiller(char source[])
+{
+  FILE *tujuan;
+  tujuan = fopen("killer.sh", "w");
+  int status;
+
+  if(!strcmp(source, "-a")) fprintf(tujuan, "#!/bin/bash\nkill -9 -%d\nrm killer", getpid());
+
+  if(!strcmp(source, "-b")) fprintf(tujuan, "#!/bin/bash\nkill %d\nrm killer", getpid());
+  
+  if(fork() == 0)
+  {  
+    if (fork() == 0)
     {
-      //buat file c disini
-      char* buatC[] = {"touch", "test.c", NULL};
-      execv("/usr/bin/touch", buatC);
+      char *argv[] = {"chmod", "u+x", "killer.sh", NULL};
+      execv("/bin/chmod", argv);
     }
     else
     {
-      while ((wait(&status_CreateC)) > 0);
-      FILE *fp;
-      fp = fopen("test.c", "w");
-      
-      // tulis program buat bikin folder dengan nama [YYYY-mm-dd_HH:ii:ss]
-      // disini
-
-      fclose(fp);
-
-      // compile disini
-      pid_t compileC_id;
-      int status_compileC;
-      compileC_id = fork();
-
-      if(compileC_id < 0)
-      {
-        puts("fail to create compileC_id");
-        exit(EXIT_FAILURE);
-      }
-
-      if (compileC_id == 0)
-      {
-        char* compileC[] = {"gcc", "test.c", "-o", "test.o",NULL};
-        execv("/usr/bin/gcc", compileC);
-      }
-      else
-      {
-        while (1)
-        {
-          // jalanin program buat bikin folder
-          pid_t runC_id;
-          int status_runC;
-          runC_id = fork();
-
-          if (runC_id < 0)
-          {
-            puts("fail to create runC_id");
-            exit(EXIT_FAILURE);
-          }
-          
-          if (runC_id == 0)
-          {
-            char* runC[] = {"./test.o", NULL};
-            execv("./test.o", runC);
-          }
-          // tiap folder diisi dg 20 gambar download dari https://picsum.photos/
-          // tiap gambar didownload tiap 5 detik
-          sleep(30);
-        }  
-      }
+      while ((wait(&status)) > 0);
+      char *argv[] = {"mv", "killer.sh", "killer", NULL};
+      execv("/bin/mv", argv);
     }
   }
+  fclose(tujuan);
 }
 ```
-#### KENDALA
-- Keterbatasan waktu membuat kami tidak sempat menyelesaikan soal 2
-- Belum terlalu paham cara mengatur waktu saat harus membuat folder setiap 30 detik sementara harus download foto setiap 5 detik
-- Belum tau cara mendapat detik Epoch Unix
+#### PENJELASAN
+- 
+- 
+- 
 
 ## Soal no. 3
 Jaya adalah seorang programmer handal mahasiswa informatika. Suatu hari dia
@@ -575,7 +601,7 @@ Catatan :
 - Gunakan exec dan fork
 - Direktori “.” dan “..” tidak termasuk
 
-### [Source code :](soal3/soal3.c)
+#### [Source code :](soal3/soal3.c)
 ```c
 #include <stdio.h>
 #include <stdlib.h>
