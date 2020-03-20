@@ -124,7 +124,6 @@ int main(int argc, char const *argv[])
   int i = 0, sec, min, hour, sleepTime, inputSec, inputMin, inputHour;
 
   /***************  cek parameter   ***********************/
-
   if(argc != 5)
   {
     puts("argumen tidak 4");
@@ -212,7 +211,7 @@ int main(int argc, char const *argv[])
     struct tm timeNow = *localtime(&t);
     printf("\n%02d:%02d:%02d\n", timeNow.tm_hour, timeNow.tm_min, timeNow.tm_sec);
     
-    if ((chdir("/home/kaori02/repository/kuliah/SMT_4/SISOP_F/Modul_2/shift")) < 0)
+    if ((chdir("/home/kaori02/SoalShiftSISOP20_modul2_F01/soal1")) < 0)
     {
       puts("fail to chdir");
       exit(EXIT_FAILURE);
