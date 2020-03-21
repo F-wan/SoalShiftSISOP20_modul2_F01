@@ -194,12 +194,33 @@ Kiwa lalu terbangun dan sedih karena menyadari programnya hanya sebuah mimpi. Bu
 
 
 ### PENJELASAN
-- 
-- 
-- 
+- Pada fungsi main:
+
+Untuk Mengatur nama folder sesuai instruktur menggunakan date dan formatnya. Setelah itu di loop sebanyak 20x untuk mendownload gambar setelah itu gambarnya di zip. dan program akan sleep selama 30 detik dan mengulangi programnya kembali
+
+- Void membuatkiller :
+
+Ini adalah killer dari program ini. ketika user menjalankan program dengan tipe a dan killer dijalankan maka killer akan membunuh parent dan child. ketika program dengan tipe `"-b"` dijalankan dan killer dijalankan juga maka killer hanya membunuh parent, dengan kata lain program akan berjalan hingga semua folder nya di zip.
 
 ### SCREENSHOT HASIL
--
+- #### Uji coba program dengan mode a
+
+![coba-a.jpg](/screenshot/coba-a.jpg)
+
+![coba-a-2.jpg](/screenshot/coba-a-2.jpg)
+
+![coba-a-mati.jpg](/screenshot/coba-a-mati.jpg)
+
+
+
+- #### Uji coba program dengan mode b
+
+![coba-b.jpg](/screenshot/coba-b.jpg)
+
+![coba-b-mati.jpg](/screenshot/coba-b-mati.jpg)
+
+![coba-a-Mcek.jpg](/screenshot/coba-b-Mcek.jpg)
+
 
 ## Soal no. 3
 Jaya adalah seorang programmer handal mahasiswa informatika. Suatu hari dia
